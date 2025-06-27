@@ -36,7 +36,15 @@ router.post('/register', async (req, res) => {
   const newUser = { id: Date.now(), username, fullName, password: hashedPassword };
   users.push(newUser);
   await writeJson(usersPath, users);
-  res.status(201).json({ message: 'User registered' });
+
+  // Generate tokens
+  const accessToken = jwt.sign({ id: newUser.id, username: newUser.username }, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+  const refreshToken = jwt.sign({ id: newUser.id, username: newUser.username }, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+  // Store refresh token
+  const refreshTokens = await readJson(refreshTokensPath);
+  refreshTokens.push(refreshToken);
+  await writeJson(refreshTokensPath, refreshTokens);
+  res.status(201).json({ accessToken, refreshToken });
 });
 
 // Login
