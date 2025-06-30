@@ -69,12 +69,18 @@ router.post('/login', async (req, res) => {
 router.post('/refresh', async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) return res.status(400).json({ error: 'Refresh token required' });
-  const refreshTokens = await readJson(refreshTokensPath);
+  let refreshTokens = await readJson(refreshTokensPath);
   if (!refreshTokens.includes(refreshToken)) return res.status(403).json({ error: 'Invalid refresh token' });
   try {
     const user = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+    // Remove the old refresh token
+    refreshTokens = refreshTokens.filter(token => token !== refreshToken);
+    // Generate new tokens
     const accessToken = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
-    res.json({ accessToken });
+    const newRefreshToken = jwt.sign({ id: user.id, username: user.username }, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+    refreshTokens.push(newRefreshToken);
+    await writeJson(refreshTokensPath, refreshTokens);
+    res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (err) {
     return res.status(403).json({ error: 'Invalid or expired refresh token' });
   }
