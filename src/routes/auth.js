@@ -9,9 +9,9 @@ const usersPath = path.resolve('src/data/users.json');
 const refreshTokensPath = path.resolve('src/data/refreshTokens.json');
 
 // Hardcoded secrets and intervals for demo
-const JWT_SECRET = 'super_secret_access_key';
-const JWT_REFRESH_SECRET = 'super_secret_refresh_key';
-const ACCESS_TOKEN_EXPIRES_IN = '15m';
+const JWT_SECRET = 'xK9#mP2$vL5*nQ8@jR4&wT7%yH3^cF6!bN1';
+const JWT_REFRESH_SECRET = 'xK9#mP2$vL5*nQ8@jR4&wT7%yH3^cF6!bN1';
+const ACCESS_TOKEN_EXPIRES_IN = '30s';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
 
 // Helper: Read JSON file
